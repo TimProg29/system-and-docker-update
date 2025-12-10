@@ -1,0 +1,13 @@
+[Unit]
+Description=Watchtower one-time update run
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker run --rm \
+  -e DOCKER_API_VERSION=1.44 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  containrrr/watchtower:latest \
+  --run-once \
+  --cleanup
