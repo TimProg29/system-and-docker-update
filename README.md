@@ -38,10 +38,10 @@ and a complete toggle system to enable or disable automatic updates at any time.
 - `git clone https://github.com/TimProg29/system-and-docker-update.git`
 
 ### 2. Master Install Command (Default Update Time 05:00)
-- `cd /opt/watchtower-lxc-update && chmod +x setup.sh scripts/*.sh && systemctl daemon-reload && bash setup.sh`
+- `cd watchtower-lxc-update && chmod +x setup.sh scripts/*.sh && systemctl daemon-reload && bash setup.sh`
 
 ### 2. Master Install Command (Custom Update Time HH:MM)
-- `cd /opt/watchtower-lxc-update && chmod +x setup.sh scripts/*.sh && systemctl daemon-reload && bash setup.sh <HH:MM>`
+- `cd watchtower-lxc-update && chmod +x setup.sh scripts/*.sh && systemctl daemon-reload && bash setup.sh <HH:MM>`
 
 ---
 
