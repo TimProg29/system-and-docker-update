@@ -29,49 +29,98 @@ and a complete toggle system to enable or disable automatic updates at any time.
 - `install-dependencies.sh` – installs Docker, Cron, and required tools
 - `system-and-docker-update.sh` – performs the actual update tasks
 - `auto-update-toggle.sh` – enables/disables automatic updates and boot updates
+- `create-symlinks.sh` – creates short command aliases (update-system, update-toggle)
 
 ---
 
 ##  Installation
 
 ### 1. Clone the repository
-- `git clone https://github.com/TimProg29/system-and-docker-update.git`
+```bash
+git clone https://github.com/TimProg29/system-and-docker-update.git
+cd system-and-docker-update
+```
 
 ### 2. Master Install Command (Default Update Time 05:00)
-- `cd watchtower-lxc-update && chmod +x setup.sh scripts/*.sh && systemctl daemon-reload && bash setup.sh`
+```bash
+chmod +x setup.sh scripts/*.sh && bash setup.sh
+```
 
 ### 2. Master Install Command (Custom Update Time HH:MM)
-- `cd watchtower-lxc-update && chmod +x setup.sh scripts/*.sh && systemctl daemon-reload && bash setup.sh <HH:MM>`
+```bash
+chmod +x setup.sh scripts/*.sh && bash setup.sh <HH:MM>
+```
 
 ---
 
 ## Commands
-- `bash setup.sh` - Installs/updates the update system with default daily update time at 05:00.
-- `bash setup.sh <HH:MM>` - Installs/updates the update system with daily update time at specified HH:MM.
-- `bash update-toggle.sh on` - Enables automatic daily updates.
-- `bash update-toggle.sh off` - Disables automatic daily updates.
-- `bash update-toggle.sh boot-on` - Enables automatic updates on container startup.
-- `bash update-toggle.sh boot-off` - Disables automatic updates on container startup.
-- `bash update-toggle.sh status` - Displays the current status of automatic updates.
-- `bash /usr/local/sbin/system-and-docker-update.sh` - Manually runs the update process immediately.
+
+### Short Commands (after installation)
+| Command | Description |
+|---------|-------------|
+| `update-system` | Manually runs the update process immediately |
+| `update-toggle on` | Enables automatic daily updates |
+| `update-toggle off` | Disables automatic daily updates |
+| `update-toggle boot-on` | Enables automatic updates on container startup |
+| `update-toggle boot-off` | Disables automatic updates on container startup |
+| `update-toggle status` | Displays the current status of automatic updates |
+| `update-log` | View full update log |
+| `update-log-live` | View real-time update log |
+
+### Setup Commands
+| Command | Description |
+|---------|-------------|
+| `bash setup.sh` | Installs/updates with default daily update time at 05:00 |
+| `bash setup.sh <HH:MM>` | Installs/updates with specified daily update time |
 
 ---
 
 ## Logs
-- Update logs are stored at `/var/log/system-and-docker-update.log`.
-- View logs with `cat /var/log/system-and-docker-update.log` or `tail -f /var/log/system-and-docker-update.log` for real-time updates.
+- Update logs are stored at `/var/log/system-and-docker-update.log`
+
+| Command | Description |
+|---------|-------------|
+| `update-log` | View full log |
+| `update-log-live` | View real-time updates |
 
 ---
 
 ## Deinstallation
-- `auto-update-toggle.sh off`
-- `auto-update-toggle.sh boot-off`
+```bash
+# Disable services
+update-toggle off
+update-toggle boot-off
 
-- `rm /usr/local/sbin/system-and-docker-update.sh`
-- `rm /usr/local/sbin/auto-update-toggle.sh`
-- `rm /etc/systemd/system/watchtower-oneshot.service`
-- `rm /etc/systemd/system/update-on-boot.service`
+# Remove symlinks
+rm /usr/local/bin/update-system
+rm /usr/local/bin/update-toggle
+rm /usr/local/bin/update-log
+rm /usr/local/bin/update-log-live
 
-- `systemctl daemon-reload`
+# Remove scripts
+rm /usr/local/sbin/system-and-docker-update.sh
+rm /usr/local/sbin/auto-update-toggle.sh
+
+# Remove services
+rm /etc/systemd/system/watchtower-oneshot.service
+rm /etc/systemd/system/update-on-boot.service
+
+# Remove log file (optional)
+rm /var/log/system-and-docker-update.log
+
+# Reload systemd
+systemctl daemon-reload
+```
 
 ---
+
+## Links
+- Watchtower GitHub: https://github.com/containrrr/watchtower
+- Docker Documentation: https://github.com/moby/moby
+- Debian LXC: https://github.com/lxc/lxc
+- Cron Documentation: https://github.com/vixie/cron
+
+---
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
