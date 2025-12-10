@@ -59,6 +59,13 @@ chmod +x /usr/local/sbin/auto-update-toggle.sh
 echo "[5/6] Creating short command symlinks..."
 bash "$SCRIPT_DIR/scripts/create-symlinks.sh"
 
+# Create log file if it doesn't exist
+LOGFILE="/var/log/system-and-docker-update.log"
+if [ ! -f "$LOGFILE" ]; then
+    touch "$LOGFILE"
+    echo "$(date): Log file created by setup.sh" >> "$LOGFILE"
+fi
+
 echo "[6/6] Creating cronjob at $CRON_HOUR:$CRON_MIN..."
 
 crontab -l 2>/dev/null | grep -v "/usr/local/sbin/system-and-docker-update.sh" > /tmp/cron.$$ || true
