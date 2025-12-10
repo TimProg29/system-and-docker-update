@@ -1,4 +1,4 @@
-# watchtower-lxc-update
+# Auto System and Docker Update
 A fully automated system and Docker update solution for Debian 13 LXC containers.  
 Includes one-shot Watchtower updates, daily scheduled updates, boot-time updates,  
 and a complete toggle system to enable or disable automatic updates at any time.
@@ -58,8 +58,8 @@ and a complete toggle system to enable or disable automatic updates at any time.
 ---
 
 ## Logs
-- Update logs are stored at `/var/log/watchtower-lxc-update.log`.
-- View logs with `cat /var/log/watchtower-lxc-update.log` or `tail -f /var/log/watchtower-lxc-update.log` for real-time updates.
+- Update logs are stored at `/var/log/system-and-docker-update.log`.
+- View logs with `cat /var/log/system-and-docker-update.log` or `tail -f /var/log/system-and-docker-update.log` for real-time updates.
 
 ---
 
