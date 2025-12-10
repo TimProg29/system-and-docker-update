@@ -3,25 +3,28 @@
 LOGFILE="/var/log/system-and-docker-update.log"
 export DEBIAN_FRONTEND=noninteractive
 
+# APT optimization options
+APT_OPTS="-o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold -o Acquire::Languages=none -o Acquire::GzipIndexes=true -o Acquire::CompressionTypes::Order::=gz"
+
 {
   echo "=============================="
   echo "$(date): Starting full update run (cron/manual)"
 
   echo "$(date): Running APT update..."
-  if ! /usr/bin/apt-get update; then
+  if ! /usr/bin/apt-get update -q $APT_OPTS; then
     echo "$(date): ERROR running apt-get update. Watchtower will NOT run."
     exit 1
   fi
 
   echo "$(date): Running APT dist-upgrade..."
-  if ! /usr/bin/apt-get -y dist-upgrade; then
+  if ! /usr/bin/apt-get -y -q dist-upgrade $APT_OPTS; then
     echo "$(date): ERROR running dist-upgrade. Watchtower will NOT run."
     exit 1
   fi
 
   echo "$(date): Cleaning up packages..."
-  /usr/bin/apt-get -y autoremove --purge || true
-  /usr/bin/apt-get -y autoclean || true
+  /usr/bin/apt-get -y -q autoremove --purge $APT_OPTS || true
+  /usr/bin/apt-get -y -q autoclean || true
 
   echo "$(date): System update completed successfully."
   echo "$(date): Starting Watchtower (one-time run)..."

@@ -18,14 +18,27 @@ fi
 # Create log viewing scripts
 cat > /usr/local/bin/update-log << 'EOF'
 #!/bin/bash
-cat /var/log/system-and-docker-update.log
+LOGFILE="/var/log/system-and-docker-update.log"
+if [ -f "$LOGFILE" ]; then
+    cat "$LOGFILE"
+else
+    echo "No log file found. Run 'update-system' first to generate logs."
+fi
 EOF
 chmod +x /usr/local/bin/update-log
 echo "✓ Created: update-log"
 
 cat > /usr/local/bin/update-log-live << 'EOF'
 #!/bin/bash
-tail -f /var/log/system-and-docker-update.log
+LOGFILE="/var/log/system-and-docker-update.log"
+if [ -f "$LOGFILE" ]; then
+    tail -f "$LOGFILE"
+else
+    echo "No log file found. Run 'update-system' first to generate logs."
+    echo "Waiting for log file to be created..."
+    while [ ! -f "$LOGFILE" ]; do sleep 1; done
+    tail -f "$LOGFILE"
+fi
 EOF
 chmod +x /usr/local/bin/update-log-live
 echo "✓ Created: update-log-live"

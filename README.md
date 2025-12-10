@@ -5,7 +5,7 @@ and a complete toggle system to enable or disable automatic updates at any time.
 
 ---
 
-##  Features
+## Features
 
 - Automatic system updates (APT)
 - Automatic Docker container updates using Watchtower (one-shot mode)
@@ -18,7 +18,7 @@ and a complete toggle system to enable or disable automatic updates at any time.
 
 ---
 
-##  Components Included
+## Components Included
 
 ### Systemd Services
 - `watchtower-oneshot.service` – runs Watchtower once per update cycle
@@ -29,26 +29,26 @@ and a complete toggle system to enable or disable automatic updates at any time.
 - `install-dependencies.sh` – installs Docker, Cron, and required tools
 - `system-and-docker-update.sh` – performs the actual update tasks
 - `auto-update-toggle.sh` – enables/disables automatic updates and boot updates
-- `create-symlinks.sh` – creates short command aliases (update-system, update-toggle)
+- `create-symlinks.sh` – creates short command aliases
 
 ---
 
-##  Installation
+## Installation
 
-### 1. Clone the repository
+### Clone the repository
 ```bash
 git clone https://github.com/TimProg29/system-and-docker-update.git
 cd system-and-docker-update
 ```
 
-### 2. Master Install Command (Default Update Time 05:00)
+### Install with default update time (05:00)
 ```bash
 chmod +x setup.sh scripts/*.sh && bash setup.sh
 ```
 
-### 2. Master Install Command (Custom Update Time HH:MM)
+### Install with custom update time (HH:MM)
 ```bash
-chmod +x setup.sh scripts/*.sh && bash setup.sh <HH:MM>
+chmod +x setup.sh scripts/*.sh && bash setup.sh 22:30
 ```
 
 ---
@@ -70,13 +70,14 @@ chmod +x setup.sh scripts/*.sh && bash setup.sh <HH:MM>
 ### Setup Commands
 | Command | Description |
 |---------|-------------|
-| `bash setup.sh` | Installs/updates with default daily update time at 05:00 |
-| `bash setup.sh <HH:MM>` | Installs/updates with specified daily update time |
+| `bash setup.sh` | Installs with default daily update time at 05:00 |
+| `bash setup.sh <HH:MM>` | Installs with specified daily update time |
 
 ---
 
 ## Logs
-- Update logs are stored at `/var/log/system-and-docker-update.log`
+
+Update logs are stored at `/var/log/system-and-docker-update.log`
 
 | Command | Description |
 |---------|-------------|
@@ -115,10 +116,10 @@ systemctl daemon-reload
 ---
 
 ## Links
-- Watchtower GitHub: https://github.com/containrrr/watchtower
-- Docker Documentation: https://github.com/moby/moby
-- Debian LXC: https://github.com/lxc/lxc
-- Cron Documentation: https://github.com/vixie/cron
+- [Watchtower GitHub](https://github.com/containrrr/watchtower)
+- [Docker Documentation](https://docs.docker.com/)
+- [Debian LXC](https://wiki.debian.org/LXC)
+- [Cron Documentation](https://man7.org/linux/man-pages/man5/crontab.5.html)
 
 ---
 
