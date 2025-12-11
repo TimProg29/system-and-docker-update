@@ -75,6 +75,26 @@ APT_OPTS="-o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold 
 
   echo "$(date): System update completed successfully."
 
+  # Run custom update commands
+  CUSTOM_COMMANDS_FILE="/etc/lxc-auto-update-commands.conf"
+  if [ -s "$CUSTOM_COMMANDS_FILE" ]; then
+    echo ""
+    echo "$(date): === Custom Update Commands ==="
+    while IFS= read -r line; do
+        if [ -n "$line" ]; then
+            local desc=$(echo "$line" | sed 's/DESC:\(.*\)|CMD:.*/\1/')
+            local cmd=$(echo "$line" | sed 's/.*|CMD://')
+            echo "$(date): Running: $desc"
+            if eval "$cmd" 2>&1; then
+                echo "$(date): ✓ $desc completed"
+            else
+                echo "$(date): ✗ $desc failed"
+            fi
+        fi
+    done < "$CUSTOM_COMMANDS_FILE"
+    echo "$(date): === End Custom Commands ==="
+  fi
+
   # Check for services needing restart after update
   if command -v needrestart &> /dev/null; then
     echo ""

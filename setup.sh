@@ -63,6 +63,10 @@ echo "[6/7] Installing auto-update toggle script..."
 cp "$SCRIPT_DIR/scripts/auto-update-toggle.sh" /usr/local/sbin/
 chmod +x /usr/local/sbin/auto-update-toggle.sh
 
+echo "[6.5/7] Installing custom commands script..."
+cp "$SCRIPT_DIR/scripts/update-custom.sh" /usr/local/sbin/
+chmod +x /usr/local/sbin/update-custom.sh
+
 echo "[7/7] Creating short command symlinks..."
 bash "$SCRIPT_DIR/scripts/create-symlinks.sh"
 
@@ -101,6 +105,7 @@ echo "   update-toggle on/off       # enable/disable daily updates"
 echo "   update-toggle boot-on/off  # enable/disable boot updates"
 echo "   update-toggle restart-on   # enable auto-restart services"
 echo "   update-toggle restart-off  # disable auto-restart services"
+echo "   update-custom add/remove   # manage custom update commands"
 echo "   update-log                 # view full log"
 echo "   update-log-live            # view real-time log"
 echo ""

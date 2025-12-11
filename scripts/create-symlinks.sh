@@ -15,6 +15,12 @@ else
     echo "✗ Failed to create: update-toggle"
 fi
 
+if ln -sf /usr/local/sbin/update-custom.sh /usr/local/bin/update-custom; then
+    echo "✓ Created: update-custom"
+else
+    echo "✗ Failed to create: update-custom"
+fi
+
 # Create log viewing scripts
 cat > /usr/local/bin/update-log << 'EOF'
 #!/bin/bash
@@ -47,5 +53,6 @@ echo ""
 echo "Short commands available:"
 echo "  - update-system    (runs system and docker updates)"
 echo "  - update-toggle    (manage automatic updates)"
+echo "  - update-custom    (manage custom update commands)"
 echo "  - update-log       (view full log)"
 echo "  - update-log-live  (view real-time log)"

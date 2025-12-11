@@ -1,22 +1,58 @@
-
 # LXC-Auto-Update
 
-A fully automated system and Docker update solution for Debian-based LXC containers (Debian 12/13).  
-Includes one-shot Watchtower updates, daily scheduled updates, boot-time updates,  
-and a complete toggle system to enable or disable automatic updates at any time.
+A fully automated system and Docker update solution for Debian-based LXC containers (Debian 12/13).
+
+LXC-Auto-Update keeps your containers always up-to-date with minimal effort. It combines APT system updates with Docker container updates via Watchtower in a single, automated solution. The tool supports daily scheduled updates, boot-time updates, automatic service restarts, and custom update commands for third-party applications like Pi-hole or Home Assistant.
+
+### Key Highlights
+- 🔄 **Fully Automated** – Set it and forget it
+- 🐳 **Docker Support** – Updates all containers via Watchtower
+- ⏰ **Flexible Scheduling** – Daily cron jobs + optional boot updates
+- 🔧 **Service Management** – Auto-restart services after updates
+- 📝 **Custom Commands** – Add your own update scripts
+- 📊 **Detailed Logging** – Full visibility into update processes
 
 ---
 
 ## Features
 
-- Automatic system updates (APT)
+### System Updates
+- Automatic system updates (APT dist-upgrade)
+- Optimized APT commands for faster updates
+- Automatic cleanup (autoremove, autoclean)
+
+### Docker Updates
 - Automatic Docker container updates using Watchtower (one-shot mode)
+- Automatic Docker API version detection
+- Container overview in logs (running & stopped)
+- Image cleanup after updates
+
+### Scheduling
+- Daily scheduled updates via Cron (customizable time)
 - Automatic updates on container startup (optional)
-- Daily scheduled updates via Cron
-- Full enable/disable toggle system for daily updates & boot updates
-- Manual update execution
-- Full log output
-- Automatic installation of all required dependencies (Docker, Cron, etc.)
+- Full enable/disable toggle system
+
+### Service Management
+- Automatic detection of services needing restart (via needrestart)
+- Optional auto-restart of affected services after updates
+- Kernel update detection with reboot notification
+
+### Custom Commands
+- Add custom update commands for any application
+- Support for Pi-hole, AMP, Home Assistant, Snap, and more
+- Easy management (add, remove, list)
+
+### Logging & Monitoring
+- Full log output to `/var/log/lxc-auto-update.log`
+- Real-time log viewing
+- Pre-update package overview
+- Post-update service status
+
+### Installation & Configuration
+- Automatic installation of all dependencies (Docker, Cron, needrestart)
+- Simple setup with single command
+- Short command aliases for easy management
+- Configuration file for persistent settings
 
 ---
 
@@ -69,8 +105,13 @@ chmod +x setup.sh scripts/*.sh && bash setup.sh 22:30
 | `update-toggle restart-on` | Enables auto-restart of services after update |
 | `update-toggle restart-off` | Disables auto-restart of services after update |
 | `update-toggle status` | Displays the current status of all settings |
+| `update-custom add "<cmd>" "<desc>"` | Add a custom update command |
+| `update-custom remove <number>` | Remove a custom command by number |
+| `update-custom list` | List all custom update commands |
 | `update-log` | View full update log |
 | `update-log-live` | View real-time update log |
+
+---
 
 ### Setup Commands
 | Command | Description |
@@ -125,10 +166,17 @@ systemctl daemon-reload
 ---
 
 ## Links
+
+### Core Components
 - [Watchtower GitHub](https://github.com/containrrr/watchtower)
 - [Docker Documentation](https://docs.docker.com/)
 - [Debian LXC](https://wiki.debian.org/LXC)
+
+### Tools Used
 - [Cron Documentation](https://man7.org/linux/man-pages/man5/crontab.5.html)
+- [Systemd Documentation](https://www.freedesktop.org/software/systemd/man/)
+- [needrestart](https://github.com/liske/needrestart)
+- [APT Documentation](https://wiki.debian.org/Apt)
 
 ---
 
