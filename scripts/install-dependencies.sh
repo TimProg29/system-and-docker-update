@@ -23,6 +23,11 @@ systemctl enable --now cron
 echo "[4/5] Ensuring unattended-upgrades is installed..."
 apt-get install -y unattended-upgrades
 
+echo "[4.5/5] Installing needrestart for service restart detection..."
+apt-get install -y needrestart
+# Configure needrestart for automatic mode (no prompts)
+sed -i "s/#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'l';/" /etc/needrestart/needrestart.conf 2>/dev/null || true
+
 echo "[5/5] Checking Docker installation..."
 
 # Determine correct Debian codename for Docker repo

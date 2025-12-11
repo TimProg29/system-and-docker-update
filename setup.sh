@@ -73,6 +73,13 @@ if [ ! -f "$LOGFILE" ]; then
     echo "$(date): Log file created by setup.sh" >> "$LOGFILE"
 fi
 
+# Create config file if it doesn't exist
+CONFIG_FILE="/etc/lxc-auto-update.conf"
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "AUTO_RESTART=off" > "$CONFIG_FILE"
+    echo "Config file created: $CONFIG_FILE"
+fi
+
 echo "[8/8] Creating cronjob at $CRON_HOUR:$CRON_MIN..."
 
 crontab -l 2>/dev/null | grep -v "/usr/local/sbin/lxc-auto-update.sh" > /tmp/cron.$$ || true
@@ -85,12 +92,15 @@ echo " LXC-Auto-Update - Setup Complete!"
 echo "========================================"
 echo " Daily update time: $CRON_HOUR:$CRON_MIN"
 echo " Auto update on boot is ENABLED by default."
+echo " Auto-restart services is DISABLED by default."
 echo ""
 echo " Short commands available:"
 echo "   update-system              # run updates manually"
 echo "   update-toggle status       # show current status"
 echo "   update-toggle on/off       # enable/disable daily updates"
 echo "   update-toggle boot-on/off  # enable/disable boot updates"
+echo "   update-toggle restart-on   # enable auto-restart services"
+echo "   update-toggle restart-off  # disable auto-restart services"
 echo "   update-log                 # view full log"
 echo "   update-log-live            # view real-time log"
 echo ""

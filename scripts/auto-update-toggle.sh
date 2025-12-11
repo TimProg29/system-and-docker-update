@@ -2,23 +2,53 @@
 
 TARGET_CMD="/usr/local/sbin/lxc-auto-update.sh"
 BOOT_SERVICE="update-on-boot.service"
+CONFIG_FILE="/etc/lxc-auto-update.conf"
 
-if [ "$EUID" -ne 0 ]; then
-  echo "ERROR: Please run this script as root."
-  exit 1
+# Create config file if not exists
+if [ ! -f "$CONFIG_FILE" ]; then
+  echo "AUTO_RESTART=off" > "$CONFIG_FILE"
 fi
 
-ACTION="$1"
-TIME_ARG="$2"
+# Load config
+source "$CONFIG_FILE"
 
 get_current_cron_line() {
   crontab -l 2>/dev/null | grep "$TARGET_CMD" || true
 }
 
-case "$ACTION" in
+show_status() {
+  echo "=== LXC-Auto-Update Status ==="
+  
+  # Daily cron status
+  if crontab -l 2>/dev/null | grep -q "lxc-auto-update.sh"; then
+    CRON_TIME=$(crontab -l 2>/dev/null | grep "lxc-auto-update.sh" | awk '{print $2":"$1}')
+    echo "Daily updates:    ENABLED (at $CRON_TIME)"
+  else
+    echo "Daily updates:    DISABLED"
+  fi
+  
+  # Boot update status
+  if systemctl is-enabled update-on-boot.service &>/dev/null; then
+    echo "Boot updates:     ENABLED"
+  else
+    echo "Boot updates:     DISABLED"
+  fi
+  
+  # Auto-restart status
+  source "$CONFIG_FILE" 2>/dev/null
+  if [ "$AUTO_RESTART" = "on" ]; then
+    echo "Auto-restart:     ENABLED"
+  else
+    echo "Auto-restart:     DISABLED"
+  fi
+  
+  echo "==============================="
+}
+
+case "$1" in
   on)
     DEFAULT_TIME="05:00"
-    TIME_TO_USE="${TIME_ARG:-$DEFAULT_TIME}"
+    TIME_TO_USE="${2:-$DEFAULT_TIME}"
 
     if [[ ! "$TIME_TO_USE" =~ ^([01]?[0-9]|2[0-3]):[0-5][0-9]$ ]]; then
       echo "ERROR: Invalid time format. Use HH:MM"
@@ -59,20 +89,18 @@ case "$ACTION" in
     echo "Startup update disabled."
     ;;
 
+  restart-on)
+    sed -i 's/AUTO_RESTART=.*/AUTO_RESTART=on/' "$CONFIG_FILE"
+    echo "Auto-restart after updates ENABLED"
+    ;;
+
+  restart-off)
+    sed -i 's/AUTO_RESTART=.*/AUTO_RESTART=off/' "$CONFIG_FILE"
+    echo "Auto-restart after updates DISABLED"
+    ;;
+
   status)
-    CRON_LINE=$(get_current_cron_line)
-    if [ -z "$CRON_LINE" ]; then
-      CRON_STATUS="OFF"
-    else
-      CRON_MIN=$(echo "$CRON_LINE" | awk '{print $1}')
-      CRON_HOUR=$(echo "$CRON_LINE" | awk '{print $2}')
-      CRON_STATUS="ON (scheduled at ${CRON_HOUR}:${CRON_MIN})"
-    fi
-
-    BOOT_ENABLED=$(systemctl is-enabled $BOOT_SERVICE 2>/dev/null || echo "disabled")
-
-    echo "Auto update (daily cron): $CRON_STATUS"
-    echo "Auto update on boot:      $BOOT_ENABLED"
+    show_status
     ;;
 
   *)
@@ -81,6 +109,8 @@ case "$ACTION" in
     echo "  $0 off              # disable daily auto update"
     echo "  $0 boot-on          # enable auto update at container startup"
     echo "  $0 boot-off         # disable auto update at startup"
+    echo "  $0 restart-on       # enable auto-restart of services after update"
+    echo "  $0 restart-off      # disable auto-restart of services after update"
     echo "  $0 status           # show current auto-update status"
     exit 1
     ;;

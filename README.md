@@ -66,7 +66,9 @@ chmod +x setup.sh scripts/*.sh && bash setup.sh 22:30
 | `update-toggle off` | Disables automatic daily updates |
 | `update-toggle boot-on` | Enables automatic updates on container startup |
 | `update-toggle boot-off` | Disables automatic updates on container startup |
-| `update-toggle status` | Displays the current status of automatic updates |
+| `update-toggle restart-on` | Enables auto-restart of services after update |
+| `update-toggle restart-off` | Disables auto-restart of services after update |
+| `update-toggle status` | Displays the current status of all settings |
 | `update-log` | View full update log |
 | `update-log-live` | View real-time update log |
 
@@ -105,6 +107,9 @@ rm /usr/local/bin/update-log-live
 rm /usr/local/sbin/lxc-auto-update.sh
 rm /usr/local/sbin/auto-update-toggle.sh
 rm /usr/local/sbin/run-watchtower.sh
+
+# Remove config
+rm /etc/lxc-auto-update.conf
 
 # Remove services
 rm /etc/systemd/system/watchtower-oneshot.service
