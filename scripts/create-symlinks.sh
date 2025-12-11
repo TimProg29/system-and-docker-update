@@ -3,7 +3,7 @@
 # Create symlinks for short commands
 echo "Creating symlinks for short commands..."
 
-if ln -sf /usr/local/sbin/system-and-docker-update.sh /usr/local/bin/update-system; then
+if ln -sf /usr/local/sbin/lxc-auto-update.sh /usr/local/bin/update-system; then
     echo "✓ Created: update-system"
 else
     echo "✗ Failed to create: update-system"
@@ -18,7 +18,7 @@ fi
 # Create log viewing scripts
 cat > /usr/local/bin/update-log << 'EOF'
 #!/bin/bash
-LOGFILE="/var/log/system-and-docker-update.log"
+LOGFILE="/var/log/lxc-auto-update.log"
 if [ -f "$LOGFILE" ]; then
     cat "$LOGFILE"
 else
@@ -30,7 +30,7 @@ echo "✓ Created: update-log"
 
 cat > /usr/local/bin/update-log-live << 'EOF'
 #!/bin/bash
-LOGFILE="/var/log/system-and-docker-update.log"
+LOGFILE="/var/log/lxc-auto-update.log"
 if [ -f "$LOGFILE" ]; then
     tail -f "$LOGFILE"
 else

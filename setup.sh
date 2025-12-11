@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============================================
-# setup.sh - Install system update automation
+# setup.sh - LXC-Auto-Update Installation
 # Default time: 05:00
 # Usage:
 #   bash setup.sh           → installs with 05:00 daily
@@ -34,51 +34,55 @@ fi
 CRON_HOUR=$(echo "$INPUT_TIME" | cut -d':' -f1)
 CRON_MIN=$(echo "$INPUT_TIME"  | cut -d':' -f2)
 
+echo "========================================"
+echo " LXC-Auto-Update - Installation"
+echo "========================================"
 echo "Using daily update time: $CRON_HOUR:$CRON_MIN"
 
-echo "[0/6] Installing required dependencies..."
+echo "[1/7] Installing required dependencies..."
 bash "$SCRIPT_DIR/scripts/install-dependencies.sh"
 
-echo "[1/6] Installing systemd Watchtower service..."
+echo "[2/7] Installing systemd Watchtower service..."
 cp "$SCRIPT_DIR/systemd/watchtower-oneshot.service" /etc/systemd/system/
 systemctl daemon-reload
 
-echo "[2/6] Installing update script..."
-cp "$SCRIPT_DIR/scripts/system-and-docker-update.sh" /usr/local/sbin/
-chmod +x /usr/local/sbin/system-and-docker-update.sh
+echo "[3/7] Installing update script..."
+cp "$SCRIPT_DIR/scripts/lxc-auto-update.sh" /usr/local/sbin/
+chmod +x /usr/local/sbin/lxc-auto-update.sh
 
-echo "[2.5/6] Installing Watchtower runner script..."
+echo "[4/7] Installing Watchtower runner script..."
 cp "$SCRIPT_DIR/scripts/run-watchtower.sh" /usr/local/sbin/
 chmod +x /usr/local/sbin/run-watchtower.sh
 
-echo "[3/6] Installing update-on-boot service and enabling it..."
+echo "[5/7] Installing update-on-boot service and enabling it..."
 cp "$SCRIPT_DIR/systemd/update-on-boot.service" /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable update-on-boot.service
 
-echo "[4/6] Installing auto-update toggle script..."
+echo "[6/7] Installing auto-update toggle script..."
 cp "$SCRIPT_DIR/scripts/auto-update-toggle.sh" /usr/local/sbin/
 chmod +x /usr/local/sbin/auto-update-toggle.sh
 
-echo "[5/6] Creating short command symlinks..."
+echo "[7/7] Creating short command symlinks..."
 bash "$SCRIPT_DIR/scripts/create-symlinks.sh"
 
 # Create log file if it doesn't exist
-LOGFILE="/var/log/system-and-docker-update.log"
+LOGFILE="/var/log/lxc-auto-update.log"
 if [ ! -f "$LOGFILE" ]; then
     touch "$LOGFILE"
     echo "$(date): Log file created by setup.sh" >> "$LOGFILE"
 fi
 
-echo "[6/6] Creating cronjob at $CRON_HOUR:$CRON_MIN..."
+echo "[8/8] Creating cronjob at $CRON_HOUR:$CRON_MIN..."
 
-crontab -l 2>/dev/null | grep -v "/usr/local/sbin/system-and-docker-update.sh" > /tmp/cron.$$ || true
-echo "$CRON_MIN $CRON_HOUR * * * /usr/local/sbin/system-and-docker-update.sh" >> /tmp/cron.$$
+crontab -l 2>/dev/null | grep -v "/usr/local/sbin/lxc-auto-update.sh" > /tmp/cron.$$ || true
+echo "$CRON_MIN $CRON_HOUR * * * /usr/local/sbin/lxc-auto-update.sh" >> /tmp/cron.$$
 crontab /tmp/cron.$$
 rm -f /tmp/cron.$$
 
-echo "======================================"
-echo " Setup completed successfully!"
+echo "========================================"
+echo " LXC-Auto-Update - Setup Complete!"
+echo "========================================"
 echo " Daily update time: $CRON_HOUR:$CRON_MIN"
 echo " Auto update on boot is ENABLED by default."
 echo ""
@@ -90,5 +94,5 @@ echo "   update-toggle boot-on/off  # enable/disable boot updates"
 echo "   update-log                 # view full log"
 echo "   update-log-live            # view real-time log"
 echo ""
-echo " Logfile: /var/log/system-and-docker-update.log"
-echo "======================================"
+echo " Logfile: /var/log/lxc-auto-update.log"
+echo "========================================"

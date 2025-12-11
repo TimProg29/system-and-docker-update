@@ -1,11 +1,12 @@
 [Unit]
-Description=Run system and docker update at container startup
+Description=LXC-Auto-Update on boot
 After=network-online.target docker.service
 Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/system-and-docker-update.sh
+ExecStart=/usr/local/sbin/lxc-auto-update.sh
+RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target

@@ -1,4 +1,4 @@
-# Auto System and Docker Update
+# LXC-Auto-Update
 A fully automated system and Docker update solution for Debian-based LXC containers (Debian 12/13).  
 Includes one-shot Watchtower updates, daily scheduled updates, boot-time updates,  
 and a complete toggle system to enable or disable automatic updates at any time.
@@ -27,9 +27,10 @@ and a complete toggle system to enable or disable automatic updates at any time.
 ### Shell Scripts
 - `setup.sh` – installs and configures the entire update system
 - `install-dependencies.sh` – installs Docker, Cron, and required tools
-- `system-and-docker-update.sh` – performs the actual update tasks
+- `lxc-auto-update.sh` – performs the actual update tasks
 - `auto-update-toggle.sh` – enables/disables automatic updates and boot updates
 - `create-symlinks.sh` – creates short command aliases
+- `run-watchtower.sh` – runs Watchtower with correct Docker API version
 
 ---
 
@@ -37,8 +38,8 @@ and a complete toggle system to enable or disable automatic updates at any time.
 
 ### Clone the repository
 ```bash
-git clone https://github.com/TimProg29/system-and-docker-update.git
-cd system-and-docker-update
+git clone https://github.com/TimProg29/LXC-Auto-Update.git
+cd LXC-Auto-Update
 ```
 
 ### Install with default update time (05:00)
@@ -77,7 +78,7 @@ chmod +x setup.sh scripts/*.sh && bash setup.sh 22:30
 
 ## Logs
 
-Update logs are stored at `/var/log/system-and-docker-update.log`
+Update logs are stored at `/var/log/lxc-auto-update.log`
 
 | Command | Description |
 |---------|-------------|
@@ -99,15 +100,16 @@ rm /usr/local/bin/update-log
 rm /usr/local/bin/update-log-live
 
 # Remove scripts
-rm /usr/local/sbin/system-and-docker-update.sh
+rm /usr/local/sbin/lxc-auto-update.sh
 rm /usr/local/sbin/auto-update-toggle.sh
+rm /usr/local/sbin/run-watchtower.sh
 
 # Remove services
 rm /etc/systemd/system/watchtower-oneshot.service
 rm /etc/systemd/system/update-on-boot.service
 
 # Remove log file (optional)
-rm /var/log/system-and-docker-update.log
+rm /var/log/lxc-auto-update.log
 
 # Reload systemd
 systemctl daemon-reload

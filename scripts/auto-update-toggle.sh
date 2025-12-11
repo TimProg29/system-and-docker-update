@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGET_CMD="/usr/local/sbin/system-and-docker-update.sh"
+TARGET_CMD="/usr/local/sbin/lxc-auto-update.sh"
 BOOT_SERVICE="update-on-boot.service"
 
 if [ "$EUID" -ne 0 ]; then
