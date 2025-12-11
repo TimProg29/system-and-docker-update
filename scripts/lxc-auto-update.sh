@@ -2,6 +2,7 @@
 
 LOGFILE="/var/log/lxc-auto-update.log"
 CONFIG_FILE="/etc/lxc-auto-update.conf"
+CUSTOM_COMMANDS_FILE="/etc/lxc-auto-update-commands.conf"
 export DEBIAN_FRONTEND=noninteractive
 
 # Load config
@@ -59,13 +60,13 @@ APT_OPTS="-o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold 
   echo ""
   echo "$(date): Running APT update..."
   if ! /usr/bin/apt-get update -q $APT_OPTS; then
-    echo "$(date): ERROR running apt-get update. Watchtower will NOT run."
+    echo "$(date): ERROR running apt-get update."
     exit 1
   fi
 
   echo "$(date): Running APT dist-upgrade..."
   if ! /usr/bin/apt-get -y -q dist-upgrade $APT_OPTS; then
-    echo "$(date): ERROR running dist-upgrade. Watchtower will NOT run."
+    echo "$(date): ERROR running dist-upgrade."
     exit 1
   fi
 
@@ -76,15 +77,15 @@ APT_OPTS="-o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold 
   echo "$(date): System update completed successfully."
 
   # Run custom update commands
-  CUSTOM_COMMANDS_FILE="/etc/lxc-auto-update-commands.conf"
   if [ -s "$CUSTOM_COMMANDS_FILE" ]; then
     echo ""
     echo "$(date): === Custom Update Commands ==="
     while IFS= read -r line; do
         if [ -n "$line" ]; then
-            local desc=$(echo "$line" | sed 's/DESC:\(.*\)|CMD:.*/\1/')
-            local cmd=$(echo "$line" | sed 's/.*|CMD://')
+            desc=$(echo "$line" | sed 's/DESC:\(.*\)|CMD:.*/\1/')
+            cmd=$(echo "$line" | sed 's/.*|CMD://')
             echo "$(date): Running: $desc"
+            echo "$(date): Command: $cmd"
             if eval "$cmd" 2>&1; then
                 echo "$(date): ✓ $desc completed"
             else
@@ -106,20 +107,20 @@ APT_OPTS="-o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold 
     if [ -n "$SERVICES_TO_RESTART" ]; then
       SERVICE_COUNT=$(echo "$SERVICES_TO_RESTART" | wc -l)
       echo "$(date): Found $SERVICE_COUNT service(s) needing restart:"
-      echo "$SERVICES_TO_RESTART" | while read service; do
-        echo "  - $service"
+      echo "$SERVICES_TO_RESTART" | while read svc; do
+        echo "  - $svc"
       done
       
       if [ "$AUTO_RESTART" = "on" ]; then
         echo ""
         echo "$(date): Auto-restart is ENABLED. Restarting affected services..."
-        echo "$SERVICES_TO_RESTART" | while read service; do
-          if [ -n "$service" ]; then
-            echo "$(date): Restarting $service..."
-            if systemctl restart "$service" 2>&1; then
-              echo "$(date): ✓ $service restarted successfully"
+        echo "$SERVICES_TO_RESTART" | while read svc; do
+          if [ -n "$svc" ]; then
+            echo "$(date): Restarting $svc..."
+            if systemctl restart "$svc" 2>&1; then
+              echo "$(date): ✓ $svc restarted successfully"
             else
-              echo "$(date): ✗ WARNING: Failed to restart $service"
+              echo "$(date): ✗ WARNING: Failed to restart $svc"
             fi
           fi
         done
