@@ -22,34 +22,57 @@ systemctl enable --now cron
 
 echo "[4/5] Ensuring unattended-upgrades is installed..."
 apt-get install -y unattended-upgrades
-# optional interactive config, safe to skip in automation
 
 echo "[5/5] Checking Docker installation..."
-if ! command -v docker >/dev/null 2>&1; then
-  echo "Docker not found. Installing Docker CE..."
 
-  mkdir -p /etc/apt/keyrings
-  if [ ! -f /etc/apt/keyrings/docker.gpg ]; then
-    curl -fsSL https://download.docker.com/linux/debian/gpg \
-      -o /etc/apt/keyrings/docker.gpg
-    chmod a+r /etc/apt/keyrings/docker.gpg
-  fi
+# Determine correct Debian codename for Docker repo
+. /etc/os-release
+DOCKER_CODENAME="${VERSION_CODENAME}"
 
-  . /etc/os-release
-  DOCKER_CODENAME="${VERSION_CODENAME:-bookworm}"
+# Docker may not have repos for testing/unstable versions - fallback to bookworm
+case "$DOCKER_CODENAME" in
+  trixie|sid|testing|unstable)
+    echo "Notice: Debian $DOCKER_CODENAME detected. Using 'bookworm' for Docker repository."
+    DOCKER_CODENAME="bookworm"
+    ;;
+esac
+
+fix_docker_gpg_key() {
+  echo "Setting up Docker GPG key..."
+  rm -f /etc/apt/keyrings/docker.gpg
+  rm -f /etc/apt/keyrings/docker.asc
+  install -m 0755 -d /etc/apt/keyrings
+  
+  # Download and dearmor in one step
+  curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg
+  chmod a+r /etc/apt/keyrings/docker.gpg
 
   echo \
 "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
 https://download.docker.com/linux/debian \
 ${DOCKER_CODENAME} stable" \
   > /etc/apt/sources.list.d/docker.list
-
+  
   apt-get update -y
-  apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+}
 
+if ! command -v docker >/dev/null 2>&1; then
+  echo "Docker not found. Installing Docker CE..."
+  rm -f /etc/apt/sources.list.d/docker.list
+  fix_docker_gpg_key
+  apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
   systemctl enable --now docker
 else
   echo "Docker is already installed."
+  
+  # Always verify and fix GPG key if needed
+  if apt-get update 2>&1 | grep -q "NO_PUBKEY\|not signed"; then
+    echo "Docker repository has GPG issues. Fixing..."
+    fix_docker_gpg_key
+    echo "Docker GPG key fixed."
+  else
+    echo "Docker repository OK."
+  fi
 fi
 
 echo "All required dependencies are installed and running."

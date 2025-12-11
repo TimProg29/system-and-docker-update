@@ -1,5 +1,5 @@
 # Auto System and Docker Update
-A fully automated system and Docker update solution for Debian 13 LXC containers.  
+A fully automated system and Docker update solution for Debian-based LXC containers (Debian 12/13).  
 Includes one-shot Watchtower updates, daily scheduled updates, boot-time updates,  
 and a complete toggle system to enable or disable automatic updates at any time.
 
